@@ -179,10 +179,25 @@ void display_graph(Graph *graph) {
     printf("\n--- Graph Nodes ---\n");
     printf("Node count: %d\n", graph->node_count);
     for (int i = 0; i < graph->node_count; i++) {
-        printf("[%d] a=%d, b=%s, c=%.2f, d=%s (neighbors: %d)\n", i,
+        printf("[%d] a=%d, b=%s, c=%.2f, d=%s\n", i,
                graph->nodes[i]->data.a, graph->nodes[i]->data.b,
-               graph->nodes[i]->data.c, graph->nodes[i]->data.d,
-               graph->nodes[i]->neighbor_count);
+               graph->nodes[i]->data.c, graph->nodes[i]->data.d);
+
+        if (graph->nodes[i]->neighbor_count > 0) {
+            printf("    Neighbors: ");
+            for (int j = 0; j < graph->nodes[i]->neighbor_count; j++) {
+                for (int k = 0; k < graph->node_count; k++) {
+                    if (graph->nodes[k] == graph->nodes[i]->neighbors[j]) {
+                        printf("%d", k);
+                        if (j < graph->nodes[i]->neighbor_count - 1) {
+                            printf(", ");
+                        }
+                        break;
+                    }
+                }
+            }
+            printf("\n");
+        }
     }
     printf("\n");
 }
