@@ -131,11 +131,20 @@ int compare_elements(const void *a, const void *b) {
     Element *elem_a = (Element *)a;
     Element *elem_b = (Element *)b;
 
-    if (elem_a->a < elem_b->a)
-        return -1;
-    if (elem_a->a > elem_b->a)
-        return 1;
-    return 0;
+    if (elem_a->a != elem_b->a) {
+        return (elem_a->a < elem_b->a) ? -1 : 1;
+    }
+
+    int b_cmp = strcmp(elem_a->b, elem_b->b);
+    if (b_cmp != 0) {
+        return b_cmp;
+    }
+
+    if (elem_a->c != elem_b->c) {
+        return (elem_a->c < elem_b->c) ? -1 : 1;
+    }
+
+    return strcmp(elem_a->d, elem_b->d);
 }
 
 void sort_array(Element *array, int array_count) {
