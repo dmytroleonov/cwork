@@ -107,6 +107,7 @@ void add_edge(Graph *graph, int from_idx, int to_idx) {
 
     from_node->neighbors[from_node->neighbor_count] = graph->nodes[to_idx];
     from_node->neighbor_count++;
+    printf("Edge added successfully\n");
 }
 
 void transfer_graph_to_array(Graph *graph, Element *array, int *array_count) {
@@ -125,6 +126,7 @@ void transfer_graph_to_array(Graph *graph, Element *array, int *array_count) {
         array[*array_count] = graph->nodes[i]->data;
         (*array_count)++;
     }
+    printf("Graph transferred to array successfully\n");
 }
 
 int compare_elements(const void *a, const void *b) {
@@ -154,6 +156,7 @@ void sort_array(Element *array, int array_count) {
     }
 
     qsort(array, array_count, sizeof(Element), compare_elements);
+    printf("Array sorted successfully\n");
 }
 
 void display_array(Element *array, int array_count) {
@@ -214,6 +217,46 @@ void free_graph(Graph *graph) {
     free(graph);
 }
 
+int input_int(const char *prompt) {
+    int value;
+    while (1) {
+        printf("%s", prompt);
+        if (scanf("%d", &value) == 1) {
+            return value;
+        }
+        fprintf(stderr, "Invalid input. Please enter a valid integer.\n");
+        while (getchar() != '\n') {
+        };
+    }
+}
+
+double input_double(const char *prompt) {
+    double value;
+    while (1) {
+        printf("%s", prompt);
+        if (scanf("%lf", &value) == 1) {
+            return value;
+        }
+        fprintf(stderr, "Invalid input. Please enter a valid double.\n");
+        while (getchar() != '\n') {
+        };
+    }
+}
+
+void input_string(const char *prompt, char *buffer, size_t buffer_size) {
+    while (1) {
+        printf("%s", prompt);
+        char format[16];
+        snprintf(format, sizeof(format), "%%%zus", buffer_size - 1);
+        if (scanf(format, buffer) == 1) {
+            return;
+        }
+        fprintf(stderr, "Invalid input. Please enter a valid string.\n");
+        while (getchar() != '\n') {
+        };
+    }
+}
+
 int main(void) {
     Graph *graph = create_graph();
     if (!graph) {
@@ -241,17 +284,19 @@ int main(void) {
     while (running) {
         printf("\n=== Menu ===\n");
         printf("1. Display Graph\n");
-        printf("2. Transfer Graph to Array\n");
-        printf("3. Sort Array\n");
-        printf("4. Display Array\n");
-        printf("5. Exit\n");
+        printf("2. Add Node to Graph\n");
+        printf("3. Add Edge to Graph\n");
+        printf("4. Transfer Graph to Array\n");
+        printf("5. Sort Array\n");
+        printf("6. Display Array\n");
+        printf("7. Exit\n");
         printf("Choose an option: ");
 
         int choice;
         if (scanf("%d", &choice) != 1) {
             fprintf(stderr, "Invalid input\n");
-            while (getchar() != '\n')
-                ;
+            while (getchar() != '\n') {
+            };
             continue;
         }
 
@@ -260,25 +305,50 @@ int main(void) {
             display_graph(graph);
             break;
 
-        case 2:
+        case 2: {
+            if (graph->node_count >= ARRAY_CAP) {
+                printf("Graph is full\n");
+                break;
+            }
+            int a = input_int("Enter a (int): ");
+            char b[MAX_STR_LEN];
+            input_string("Enter b (string): ", b, MAX_STR_LEN);
+            double c = input_double("Enter c (double): ");
+            char d[MAX_STR_LEN];
+            input_string("Enter d (string): ", d, MAX_STR_LEN);
+            add_node_to_graph(graph, a, b, c, d);
+            printf("Node added successfully\n");
+            break;
+        }
+
+        case 3: {
+            if (graph->node_count < 2) {
+                printf("Need at least 2 nodes to add an edge\n");
+                break;
+            }
+            int from = input_int("Enter source node index (0-%d): ");
+            int to = input_int("Enter destination node index (0-%d): ");
+            add_edge(graph, from, to);
+            break;
+        }
+
+        case 4:
             transfer_graph_to_array(graph, array, &array_count);
-            printf("Graph transferred to array successfully\n");
             break;
 
-        case 3:
+        case 5:
             if (array_count == 0) {
                 printf("Array is empty. Transfer graph to array first.\n");
             } else {
                 sort_array(array, array_count);
-                printf("Array sorted successfully\n");
             }
             break;
 
-        case 4:
+        case 6:
             display_array(array, array_count);
             break;
 
-        case 5:
+        case 7:
             running = 0;
             break;
 
