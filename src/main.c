@@ -151,8 +151,8 @@ int compare_elements(const void *a, const void *b) {
 }
 
 void sort_array(Element *array, int array_count) {
-    if (!array || array_count == 0) {
-        fprintf(stderr, "Invalid array or empty array\n");
+    if (array_count == 0) {
+        fprintf(stderr, "Array is empty\n");
         return;
     }
 
@@ -161,8 +161,8 @@ void sort_array(Element *array, int array_count) {
 }
 
 void display_array(Element *array, int array_count) {
-    if (!array) {
-        fprintf(stderr, "Invalid array\n");
+    if (array_count == 0) {
+        fprintf(stderr, "Array is empty\n");
         return;
     }
 
@@ -199,8 +199,8 @@ void process_array(Element *array, int array_count) {
 }
 
 void save_array_to_file(Element *array, int array_count, const char *filename) {
-    if (!array || !filename) {
-        fprintf(stderr, "Invalid array or filename\n");
+    if (!filename) {
+        fprintf(stderr, "Invalid filename\n");
         return;
     }
 
@@ -227,8 +227,8 @@ void save_array_to_file(Element *array, int array_count, const char *filename) {
 }
 
 void load_array_from_file(Element *array, int *array_count, const char *filename) {
-    if (!array || !array_count || !filename) {
-        fprintf(stderr, "Invalid array, array_count, or filename\n");
+    if (!filename) {
+        fprintf(stderr, "Invalid array_count or filename\n");
         return;
     }
 
