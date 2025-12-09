@@ -173,6 +173,30 @@ void display_array(Element *array, int array_count) {
     printf("\n");
 }
 
+void process_array(Element *array, int array_count) {
+    if (array_count == 0) {
+        fprintf(stderr, "Array is empty\n");
+        return;
+    }
+
+    printf("\n--- Processing Array ---\n");
+    printf("Elements where b has 3 characters and d has 4 characters:\n");
+
+    int found = 0;
+    for (int i = 0; i < array_count; i++) {
+        if (strlen(array[i].b) == 3 && strlen(array[i].d) == 4) {
+            double difference = array[i].c - array[i].a;
+            printf("Index %d: b=%s, d=%s, difference (c - a) = %.2f\n", i, array[i].b, array[i].d, difference);
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("No elements found matching the criteria\n");
+    }
+    printf("\n");
+}
+
 void display_graph(Graph *graph) {
     if (!graph) {
         fprintf(stderr, "Invalid graph\n");
@@ -289,7 +313,8 @@ int main(void) {
         printf("4. Transfer Graph to Array\n");
         printf("5. Sort Array\n");
         printf("6. Display Array\n");
-        printf("7. Exit\n");
+        printf("7. Process Array\n");
+        printf("8. Exit\n");
         printf("Choose an option: ");
 
         int choice;
@@ -349,6 +374,10 @@ int main(void) {
             break;
 
         case 7:
+            process_array(array, array_count);
+            break;
+
+        case 8:
             running = 0;
             break;
 
