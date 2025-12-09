@@ -357,7 +357,7 @@ int main(void) {
     int array_count = 0;
 
     add_node_to_graph(graph, 5, "apple", 15.5, "pear");
-    add_node_to_graph(graph, 3, "cat", 12.3, "bird");
+    add_node_to_graph(graph, 2, "cat", 12.3, "bird");
     add_node_to_graph(graph, 7, "dog", 20.1, "fish");
     add_node_to_graph(graph, 2, "ant", 9.8, "moth");
     add_node_to_graph(graph, 9, "zebra", 25.6, "lion");
