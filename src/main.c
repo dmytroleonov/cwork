@@ -197,6 +197,34 @@ void process_array(Element *array, int array_count) {
     printf("\n");
 }
 
+void save_array_to_file(Element *array, int array_count, const char *filename) {
+    if (!array || !filename) {
+        fprintf(stderr, "Invalid array or filename\n");
+        return;
+    }
+
+    FILE *file = fopen(filename, "wb");
+    if (!file) {
+        fprintf(stderr, "Failed to open file for writing\n");
+        return;
+    }
+
+    if (fwrite(&array_count, sizeof(int), 1, file) != 1) {
+        fprintf(stderr, "Failed to write array count\n");
+        fclose(file);
+        return;
+    }
+
+    if (fwrite(array, sizeof(Element), array_count, file) != (size_t)array_count) {
+        fprintf(stderr, "Failed to write array data\n");
+        fclose(file);
+        return;
+    }
+
+    fclose(file);
+    printf("Array saved to file: %s\n", filename);
+}
+
 void display_graph(Graph *graph) {
     if (!graph) {
         fprintf(stderr, "Invalid graph\n");
@@ -314,7 +342,8 @@ int main(void) {
         printf("5. Sort Array\n");
         printf("6. Display Array\n");
         printf("7. Process Array\n");
-        printf("8. Exit\n");
+        printf("8. Save Array to File\n");
+        printf("9. Exit\n");
         printf("Choose an option: ");
 
         int choice;
@@ -378,6 +407,10 @@ int main(void) {
             break;
 
         case 8:
+            save_array_to_file(array, array_count, "array.bin");
+            break;
+
+        case 9:
             running = 0;
             break;
 
