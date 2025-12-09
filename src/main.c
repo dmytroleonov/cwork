@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ARRAY_CAP 100
+#define MAX_ARRAY_LEN 100
 #define MAX_STR_LEN 256
 
 typedef struct {
@@ -46,7 +46,7 @@ Graph *create_graph(void) {
 }
 
 void add_node_to_graph(Graph *graph, int a, const char *b, double c, const char *d) {
-    if (graph->node_count >= ARRAY_CAP) {
+    if (graph->node_count >= MAX_ARRAY_LEN) {
         fprintf(stderr, "Graph is full\n");
         return;
     }
@@ -85,6 +85,7 @@ void add_node_to_graph(Graph *graph, int a, const char *b, double c, const char 
 
     graph->nodes[graph->node_count] = new_node;
     graph->node_count++;
+    printf("Node added successfully\n");
 }
 
 void add_edge(Graph *graph, int from_idx, int to_idx) {
@@ -116,7 +117,7 @@ void transfer_graph_to_array(Graph *graph, Element *array, int *array_count) {
         return;
     }
 
-    if (graph->node_count > ARRAY_CAP) {
+    if (graph->node_count > MAX_ARRAY_LEN) {
         fprintf(stderr, "Graph has more nodes than array capacity\n");
         return;
     }
@@ -225,6 +226,42 @@ void save_array_to_file(Element *array, int array_count, const char *filename) {
     printf("Array saved to file: %s\n", filename);
 }
 
+void load_array_from_file(Element *array, int *array_count, const char *filename) {
+    if (!array || !array_count || !filename) {
+        fprintf(stderr, "Invalid array, array_count, or filename\n");
+        return;
+    }
+
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        fprintf(stderr, "Failed to open file for reading\n");
+        return;
+    }
+
+    if (fread(array_count, sizeof(int), 1, file) != 1) {
+        fprintf(stderr, "Failed to read array count\n");
+        fclose(file);
+        return;
+    }
+
+    if (*array_count < 0 || *array_count > MAX_ARRAY_LEN) {
+        fprintf(stderr, "Invalid array count in file\n");
+        fclose(file);
+        *array_count = 0;
+        return;
+    }
+
+    if (fread(array, sizeof(Element), *array_count, file) != (size_t)*array_count) {
+        fprintf(stderr, "Failed to read array data\n");
+        fclose(file);
+        *array_count = 0;
+        return;
+    }
+
+    fclose(file);
+    printf("Array loaded from file: %s (count: %d)\n", filename, *array_count);
+}
+
 void display_graph(Graph *graph) {
     if (!graph) {
         fprintf(stderr, "Invalid graph\n");
@@ -316,7 +353,7 @@ int main(void) {
         return 1;
     }
 
-    Element array[ARRAY_CAP];
+    Element array[MAX_ARRAY_LEN];
     int array_count = 0;
 
     add_node_to_graph(graph, 5, "apple", 15.5, "pear");
@@ -343,7 +380,8 @@ int main(void) {
         printf("6. Display Array\n");
         printf("7. Process Array\n");
         printf("8. Save Array to File\n");
-        printf("9. Exit\n");
+        printf("9. Load Array from File\n");
+        printf("10. Exit\n");
         printf("Choose an option: ");
 
         int choice;
@@ -360,7 +398,7 @@ int main(void) {
             break;
 
         case 2: {
-            if (graph->node_count >= ARRAY_CAP) {
+            if (graph->node_count >= MAX_ARRAY_LEN) {
                 printf("Graph is full\n");
                 break;
             }
@@ -411,6 +449,10 @@ int main(void) {
             break;
 
         case 9:
+            load_array_from_file(array, &array_count, "array.bin");
+            break;
+
+        case 10:
             running = 0;
             break;
 
