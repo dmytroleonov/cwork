@@ -15,14 +15,14 @@ typedef struct {
 typedef struct GraphNode {
     Element data;
     struct GraphNode **neighbors;
-    int neighbor_count;
-    int neighbor_capacity;
+    size_t neighbor_count;
+    size_t neighbor_capacity;
 } GraphNode;
 
 typedef struct {
     GraphNode **nodes;
-    int node_count;
-    int node_capacity;
+    size_t node_count;
+    size_t node_capacity;
 } Graph;
 
 Graph *create_graph(void) {
@@ -88,8 +88,8 @@ void add_node_to_graph(Graph *graph, int a, const char *b, double c, const char 
     printf("Node added successfully\n");
 }
 
-void add_edge(Graph *graph, int from_idx, int to_idx) {
-    if (!graph || from_idx >= graph->node_count || to_idx >= graph->node_count || from_idx < 0 || to_idx < 0) {
+void add_edge(Graph *graph, size_t from_idx, size_t to_idx) {
+    if (!graph || from_idx >= graph->node_count || to_idx >= graph->node_count) {
         fprintf(stderr, "Invalid node indices\n");
         return;
     }
@@ -111,7 +111,7 @@ void add_edge(Graph *graph, int from_idx, int to_idx) {
     printf("Edge added successfully\n");
 }
 
-void transfer_graph_to_array(Graph *graph, Element *array, int *array_count) {
+void transfer_graph_to_array(Graph *graph, Element *array, size_t *array_count) {
     if (!graph || !array_count) {
         fprintf(stderr, "Invalid graph or array\n");
         return;
@@ -123,7 +123,7 @@ void transfer_graph_to_array(Graph *graph, Element *array, int *array_count) {
     }
 
     *array_count = 0;
-    for (int i = 0; i < graph->node_count; i++) {
+    for (size_t i = 0; i < graph->node_count; i++) {
         array[*array_count] = graph->nodes[i]->data;
         (*array_count)++;
     }
@@ -150,7 +150,7 @@ int compare_elements(const void *a, const void *b) {
     return strcmp(elem_a->d, elem_b->d);
 }
 
-void sort_array(Element *array, int array_count) {
+void sort_array(Element *array, size_t array_count) {
     if (array_count == 0) {
         fprintf(stderr, "Array is empty\n");
         return;
@@ -160,21 +160,21 @@ void sort_array(Element *array, int array_count) {
     printf("Array sorted successfully\n");
 }
 
-void display_array(Element *array, int array_count) {
+void display_array(Element *array, size_t array_count) {
     if (array_count == 0) {
         fprintf(stderr, "Array is empty\n");
         return;
     }
 
     printf("\n--- Array Contents ---\n");
-    printf("Count: %d\n", array_count);
-    for (int i = 0; i < array_count; i++) {
-        printf("[%d] a=%d, b=%s, c=%.2f, d=%s\n", i, array[i].a, array[i].b, array[i].c, array[i].d);
+    printf("Count: %zu\n", array_count);
+    for (size_t i = 0; i < array_count; i++) {
+        printf("[%zu] a=%d, b=%s, c=%.2f, d=%s\n", i, array[i].a, array[i].b, array[i].c, array[i].d);
     }
     printf("\n");
 }
 
-void process_array(Element *array, int array_count) {
+void process_array(Element *array, size_t array_count) {
     if (array_count == 0) {
         fprintf(stderr, "Array is empty\n");
         return;
@@ -184,10 +184,10 @@ void process_array(Element *array, int array_count) {
     printf("Elements where b has 3 characters and d has 4 characters:\n");
 
     int found = 0;
-    for (int i = 0; i < array_count; i++) {
+    for (size_t i = 0; i < array_count; i++) {
         if (strlen(array[i].b) == 3 && strlen(array[i].d) == 4) {
             double difference = array[i].c - array[i].a;
-            printf("Index %d: b=%s, d=%s, difference (c - a) = %.2f\n", i, array[i].b, array[i].d, difference);
+            printf("Index %zu: b=%s, d=%s, difference (c - a) = %.2f\n", i, array[i].b, array[i].d, difference);
             found = 1;
         }
     }
@@ -198,7 +198,7 @@ void process_array(Element *array, int array_count) {
     printf("\n");
 }
 
-void save_array_to_file(Element *array, int array_count, const char *filename) {
+void save_array_to_file(Element *array, size_t array_count, const char *filename) {
     if (!filename) {
         fprintf(stderr, "Invalid filename\n");
         return;
@@ -210,13 +210,13 @@ void save_array_to_file(Element *array, int array_count, const char *filename) {
         return;
     }
 
-    if (fwrite(&array_count, sizeof(int), 1, file) != 1) {
+    if (fwrite(&array_count, sizeof(size_t), 1, file) != 1) {
         fprintf(stderr, "Failed to write array count\n");
         fclose(file);
         return;
     }
 
-    if (fwrite(array, sizeof(Element), array_count, file) != (size_t)array_count) {
+    if (fwrite(array, sizeof(Element), array_count, file) != array_count) {
         fprintf(stderr, "Failed to write array data\n");
         fclose(file);
         return;
@@ -226,7 +226,7 @@ void save_array_to_file(Element *array, int array_count, const char *filename) {
     printf("Array saved to file: %s\n", filename);
 }
 
-void load_array_from_file(Element *array, int *array_count, const char *filename) {
+void load_array_from_file(Element *array, size_t *array_count, const char *filename) {
     if (!filename) {
         fprintf(stderr, "Invalid array_count or filename\n");
         return;
@@ -238,20 +238,20 @@ void load_array_from_file(Element *array, int *array_count, const char *filename
         return;
     }
 
-    if (fread(array_count, sizeof(int), 1, file) != 1) {
+    if (fread(array_count, sizeof(size_t), 1, file) != 1) {
         fprintf(stderr, "Failed to read array count\n");
         fclose(file);
         return;
     }
 
-    if (*array_count < 0 || *array_count > MAX_ARRAY_LEN) {
+    if (*array_count > MAX_ARRAY_LEN) {
         fprintf(stderr, "Invalid array count in file\n");
         fclose(file);
         *array_count = 0;
         return;
     }
 
-    if (fread(array, sizeof(Element), *array_count, file) != (size_t)*array_count) {
+    if (fread(array, sizeof(Element), *array_count, file) != *array_count) {
         fprintf(stderr, "Failed to read array data\n");
         fclose(file);
         *array_count = 0;
@@ -259,7 +259,7 @@ void load_array_from_file(Element *array, int *array_count, const char *filename
     }
 
     fclose(file);
-    printf("Array loaded from file: %s (count: %d)\n", filename, *array_count);
+    printf("Array loaded from file: %s (count: %zu)\n", filename, *array_count);
 }
 
 void display_graph(Graph *graph) {
@@ -269,18 +269,18 @@ void display_graph(Graph *graph) {
     }
 
     printf("\n--- Graph Nodes ---\n");
-    printf("Node count: %d\n", graph->node_count);
-    for (int i = 0; i < graph->node_count; i++) {
-        printf("[%d] a=%d, b=%s, c=%.2f, d=%s\n", i,
+    printf("Node count: %zu\n", graph->node_count);
+    for (size_t i = 0; i < graph->node_count; i++) {
+        printf("[%zu] a=%d, b=%s, c=%.2f, d=%s\n", i,
                graph->nodes[i]->data.a, graph->nodes[i]->data.b,
                graph->nodes[i]->data.c, graph->nodes[i]->data.d);
 
         if (graph->nodes[i]->neighbor_count > 0) {
             printf("    Neighbors: ");
-            for (int j = 0; j < graph->nodes[i]->neighbor_count; j++) {
-                for (int k = 0; k < graph->node_count; k++) {
+            for (size_t j = 0; j < graph->nodes[i]->neighbor_count; j++) {
+                for (size_t k = 0; k < graph->node_count; k++) {
                     if (graph->nodes[k] == graph->nodes[i]->neighbors[j]) {
-                        printf("%d", k);
+                        printf("%zu", k);
                         if (j < graph->nodes[i]->neighbor_count - 1) {
                             printf(", ");
                         }
@@ -298,12 +298,25 @@ void free_graph(Graph *graph) {
     if (!graph)
         return;
 
-    for (int i = 0; i < graph->node_count; i++) {
+    for (size_t i = 0; i < graph->node_count; i++) {
         free(graph->nodes[i]->neighbors);
         free(graph->nodes[i]);
     }
     free(graph->nodes);
     free(graph);
+}
+
+size_t input_size_t(const char *prompt) {
+    size_t value;
+    while (1) {
+        printf("%s", prompt);
+        if (scanf("%zu", &value) == 1) {
+            return value;
+        }
+        fprintf(stderr, "Invalid input. Please enter a valid size.\n");
+        while (getchar() != '\n') {
+        };
+    }
 }
 
 int input_int(const char *prompt) {
@@ -354,7 +367,7 @@ int main(void) {
     }
 
     Element array[MAX_ARRAY_LEN];
-    int array_count = 0;
+    size_t array_count = 0;
 
     add_node_to_graph(graph, 5, "apple", 15.5, "pear");
     add_node_to_graph(graph, 2, "cat", 12.3, "bird");
@@ -418,8 +431,8 @@ int main(void) {
                 printf("Need at least 2 nodes to add an edge\n");
                 break;
             }
-            int from = input_int("Enter source node index (0-%d): ");
-            int to = input_int("Enter destination node index (0-%d): ");
+            size_t from = input_size_t("Enter source node index: ");
+            size_t to = input_size_t("Enter destination node index: ");
             add_edge(graph, from, to);
             break;
         }
