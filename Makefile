@@ -2,7 +2,7 @@ TARGET = dist/main
 SRCS = $(wildcard src/*.c)
 OBJS = $(patsubst src/%.c,build/%.o,$(SRCS))
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -Isrc
+CFLAGS = -Wall -Wextra -std=c11
 
 all: $(TARGET)
 
